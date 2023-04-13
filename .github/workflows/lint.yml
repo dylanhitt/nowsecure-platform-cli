@@ -1,0 +1,36 @@
+---
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  markdown:
+    name: Lint all markdown files
+    runs-on: ubuntu-22.04
+    container: pipelinecomponents/markdownlint:0.12.4
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Markdownlint
+      run: mdl --style all --warnings .
+
+
+  yaml:
+    name: Lint all yaml files
+    runs-on: ubuntu-22.04
+    container: pipelinecomponents/yamllint:0.25.0
+    env:
+      YAMLLINT_RULE: >-
+        {extends: default,
+        rules: {indentation: {spaces: 2, check-multi-line-strings: true}, line-length: {max: 250}}}
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Yamlint
+      run: yamllint -d "${YAMLLINT_RULE}" -s .
